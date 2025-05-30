@@ -1,4 +1,6 @@
-﻿namespace RaidStream;
+﻿using System.Runtime.CompilerServices;
+
+namespace RaidStream;
 
 using System;
 using System.Collections.Generic;
@@ -124,7 +126,7 @@ public class Raid5Stream : Stream
                     _disks[i].Seek(offset, SeekOrigin.Begin);
                     var temp = new byte[_stripeUnitSize];
                     _disks[i].ReadExactly(temp, 0, _stripeUnitSize);
-                    XORBuffers(buffer, temp, _stripeUnitSize);
+                    XorBuffers(buffer, temp, _stripeUnitSize);
                 }
 
                 // Write reconstructed data/parity to the recovered disk
@@ -200,7 +202,7 @@ public class Raid5Stream : Stream
                         throw new IOException($"RAID 5 consistency error: Disk {i} also failed during reconstruction.");
 
                     ReadFromPhysicalDisk(_disks[i], physicalDiskOffsetForStripe, _singleUnitBuffer, _stripeUnitSize);
-                    XORBuffers(_parityCalculationBuffer, _singleUnitBuffer, _stripeUnitSize);
+                    XorBuffers(_parityCalculationBuffer, _singleUnitBuffer, _stripeUnitSize);
                 }
 
                 // _parityCalculationBuffer now holds the reconstructed data for the targetPhysicalDataDisk's unit
@@ -272,8 +274,8 @@ public class Raid5Stream : Stream
                 bytesToProcessInCurrentUnit); // Overwrite with new data portion
 
             // 4. Calculate new parity unit: newParity = oldParity XOR oldDataUnit XOR newDataUnit
-            XORBuffers(oldParityUnit, oldDataUnit, _stripeUnitSize); // oldParityUnit now holds oldParity XOR oldDataUnit
-            XORBuffers(oldParityUnit, newDataUnit, _stripeUnitSize); // oldParityUnit now holds newParity
+            XorBuffers(oldParityUnit, oldDataUnit, _stripeUnitSize); // oldParityUnit now holds oldParity XOR oldDataUnit
+            XorBuffers(oldParityUnit, newDataUnit, _stripeUnitSize); // oldParityUnit now holds newParity
             // byte[] newParityUnit = oldParityUnit; // Renaming for clarity
 
             // 5. Write new data unit to target data disk
@@ -380,12 +382,10 @@ public class Raid5Stream : Stream
         }
     }
 
-    private void XORBuffers(byte[] target, byte[] source, int length)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void XorBuffers(byte[] target, byte[] source, int length)
     {
-        for (int i = 0; i < length; i++)
-        {
-            target[i] ^= source[i];
-        }
+        Extensions.XorBuffers(target, source, length);
     }
 
     private void ReadFromPhysicalDisk(Stream disk, long physicalOffset, byte[] buffer, int bufferOffset, int count)
