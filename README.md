@@ -1,4 +1,5 @@
 # RaidStream
+[![NuGet](https://img.shields.io/nuget/v/RaidStream.svg)](https://www.nuget.org/packages/RaidStream/)
 
 A .NET implementation of a RAID 5 stream. This library allows you to combine multiple streams (representing physical disks) into a single fault-tolerant stream with RAID 5 parity. It supports reading, writing, seeking, disk failure simulation, and recovery.
 
