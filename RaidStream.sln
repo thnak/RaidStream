@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp2", "ConsoleApp2\ConsoleApp2.csproj", "{634D9ECE-D9DC-44D8-831A-9848B1FF3B51}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaidStream", "RaidStream\RaidStream.csproj", "{634D9ECE-D9DC-44D8-831A-9848B1FF3B51}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp2.Tests", "ConsoleApp2.Tests\ConsoleApp2.Tests.csproj", "{DAB96AB8-BE1E-44D2-9265-F5FAA90D76A9}"
 EndProject

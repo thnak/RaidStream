@@ -1,4 +1,6 @@
-﻿namespace ConsoleApp2.Tests;
+﻿using RaidStream;
+
+namespace ConsoleApp2.Tests;
 
 using System.Security.Cryptography;
 using Xunit;

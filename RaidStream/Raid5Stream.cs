@@ -1,4 +1,4 @@
-﻿namespace ConsoleApp2;
+﻿namespace RaidStream;
 
 using System;
 using System.Collections.Generic;
