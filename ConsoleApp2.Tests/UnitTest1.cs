@@ -1,4 +1,5 @@
 ﻿using RaidStream;
+using System.Diagnostics;
 
 namespace ConsoleApp2.Tests;
 
@@ -18,6 +19,8 @@ public class UnitTest1
     [Fact]
     public void WriteAndRead_ShouldReturnSameData()
     {
+        var stopwatch = Stopwatch.StartNew();
+        long memoryBefore = GC.GetTotalMemory(true);
         var disks = CreateDisks(3, 1024);
         using var raid = new Raid5Stream(disks, 128);
 
@@ -30,6 +33,10 @@ public class UnitTest1
         byte[] readBack = new byte[256];
         int bytesRead = raid.Read(readBack, 0, readBack.Length);
 
+        stopwatch.Stop();
+        long memoryAfter = GC.GetTotalMemory(false);
+        Console.WriteLine($"WriteAndRead_ShouldReturnSameData: Elapsed: {stopwatch.ElapsedMilliseconds} ms, Memory Allocated: {memoryAfter - memoryBefore} bytes");
+
         Assert.Equal(data.Length, bytesRead);
         Assert.Equal(data, readBack);
     }
@@ -37,6 +44,8 @@ public class UnitTest1
     [Fact]
     public void ReadAfterDiskFailure_ShouldReconstructData()
     {
+        var stopwatch = Stopwatch.StartNew();
+        long memoryBefore = GC.GetTotalMemory(true);
         var disks = CreateDisks(4, 2048);
         using var raid = new Raid5Stream(disks, 256);
 
@@ -52,6 +61,10 @@ public class UnitTest1
         byte[] readBack = new byte[512];
         int bytesRead = raid.Read(readBack, 0, readBack.Length);
 
+        stopwatch.Stop();
+        long memoryAfter = GC.GetTotalMemory(false);
+        Console.WriteLine($"ReadAfterDiskFailure_ShouldReconstructData: Elapsed: {stopwatch.ElapsedMilliseconds} ms, Memory Allocated: {memoryAfter - memoryBefore} bytes");
+
         Assert.Equal(data.Length, bytesRead);
         Assert.Equal(data, readBack);
     }
@@ -59,6 +72,8 @@ public class UnitTest1
     [Fact]
     public void WriteToFailedDisk_ShouldThrow()
     {
+        var stopwatch = Stopwatch.StartNew();
+        long memoryBefore = GC.GetTotalMemory(true);
         var disks = CreateDisks(3, 1024);
         using var raid = new Raid5Stream(disks, 128);
 
@@ -66,11 +81,17 @@ public class UnitTest1
         raid.FailDisk(0);
 
         Assert.Throws<IOException>(() => raid.Write(data, 0, data.Length));
+
+        stopwatch.Stop();
+        long memoryAfter = GC.GetTotalMemory(false);
+        Console.WriteLine($"WriteToFailedDisk_ShouldThrow: Elapsed: {stopwatch.ElapsedMilliseconds} ms, Memory Allocated: {memoryAfter - memoryBefore} bytes");
     }
 
     [Fact]
     public void RecoverDisk_ShouldAllowWritesAgain()
     {
+        var stopwatch = Stopwatch.StartNew();
+        long memoryBefore = GC.GetTotalMemory(true);
         var disks = CreateDisks(3, 1024);
         using var raid = new Raid5Stream(disks, 128);
 
@@ -81,5 +102,10 @@ public class UnitTest1
 
         raid.RecoverDisk(0);
         raid.Write(data, 0, data.Length); // Should not throw
+
+        stopwatch.Stop();
+        long memoryAfter = GC.GetTotalMemory(false);
+        Console.WriteLine($"RecoverDisk_ShouldAllowWritesAgain: Elapsed: {stopwatch.ElapsedMilliseconds} ms, Memory Allocated: {memoryAfter - memoryBefore} bytes");
     }
 }
+

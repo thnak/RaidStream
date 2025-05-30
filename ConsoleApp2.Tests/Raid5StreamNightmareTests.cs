@@ -8,6 +8,8 @@ public class Raid5StreamNightmareTests
     [Fact]
     public void NightmareScenario_MultipleFailuresAndEdgeCases()
     {
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        long memoryBefore = GC.GetTotalMemory(true);
         var rand = new Random(98765);
         int numDisks = rand.Next(4, 8);
         int stripeUnitSize = rand.Next(512, 8192);
@@ -71,5 +73,10 @@ public class Raid5StreamNightmareTests
         raid.FailDisk(fail3);
         raid.Position = 0;
         Assert.Throws<IOException>(() => raid.Read(new byte[data.Length], 0, data.Length));
+
+        stopwatch.Stop();
+        long memoryAfter = GC.GetTotalMemory(false);
+        Console.WriteLine($"NightmareScenario_MultipleFailuresAndEdgeCases: Elapsed: {stopwatch.ElapsedMilliseconds} ms, Memory Allocated: {memoryAfter - memoryBefore} bytes");
     }
 }
+

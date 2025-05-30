@@ -31,6 +31,9 @@ public class Raid5StreamLargeDataTests
 
     private void RunWithRandomSize()
     {
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        long memoryBefore = GC.GetTotalMemory(true);
+
         int numDisks = Random.Shared.Next(3, 10);
         int diskSize = Random.Shared.Next(2 * 1024 * 1024, 10 * 1024 * 1024);
 
@@ -69,10 +72,17 @@ public class Raid5StreamLargeDataTests
 
         Assert.Equal(data.Length, bytesRead);
         Assert.Equal(originalHash, readHash);
+
+        stopwatch.Stop();
+        long memoryAfter = GC.GetTotalMemory(false);
+        Console.WriteLine($"RunWithRandomSize: Elapsed: {stopwatch.ElapsedMilliseconds} ms, Memory Allocated: {memoryAfter - memoryBefore} bytes");
     }
 
     private async Task RunWithRandomSizeAsync()
     {
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        long memoryBefore = GC.GetTotalMemory(true);
+
         int numDisks = Random.Shared.Next(3, 10);
         int diskSize = Random.Shared.Next(2 * 1024 * 1024, 10 * 1024 * 1024);
 
@@ -111,5 +121,10 @@ public class Raid5StreamLargeDataTests
 
         Assert.Equal(data.Length, bytesRead);
         Assert.Equal(originalHash, readHash);
+
+        stopwatch.Stop();
+        long memoryAfter = GC.GetTotalMemory(false);
+        Console.WriteLine($"RunWithRandomSizeAsync: Elapsed: {stopwatch.ElapsedMilliseconds} ms, Memory Allocated: {memoryAfter - memoryBefore} bytes");
     }
 }
+
